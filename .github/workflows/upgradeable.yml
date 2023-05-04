@@ -1,0 +1,31 @@
+name: upgradeable push
+
+on:
+  push:
+    branches:
+      - master
+      - release-v*
+      - testing-upg
+
+jobs:
+  trigger:
+    environment: push-upgradeable
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: frangio/openzeppelin-contracts-upgradeable
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN_UPGRADEABLE }}
+      - name: Fetch git repository
+        run: |
+          git fetch "https://github.com/${{ github.repository }}.git" "$REF"
+          git checkout FETCH_HEAD
+        env:
+          REF: ${{ github.ref }}
+      - name: Set up environment
+        uses: ./.github/actions/setup
+      - run: bash scripts/git-user-config.sh
+      - name: Transpile to upgradeable
+        run: bash scripts/upgradeable/transpile-onto.sh ${{ github.ref_name }}
+      - run: git push origin ${{ github.ref_name }}
