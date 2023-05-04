@@ -65,7 +65,6 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      * @dev Returns the name of the token.
      */
     function name() public view virtual override returns (string memory) {
-        // testing
         return _name;
     }
 
